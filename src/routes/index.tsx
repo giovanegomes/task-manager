@@ -9,7 +9,7 @@ export default function Routes() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          title: "Minhas tarefas",
+          title: "Tarefas",
           headerTitleAlign: "center",
         }}
       >
