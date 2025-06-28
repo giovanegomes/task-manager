@@ -6,4 +6,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 10,
   },
+  fab: {
+    margin: 15,
+  },
 });

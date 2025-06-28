@@ -1,8 +1,8 @@
-import { Button, Text, View } from "react-native";
-import { Task } from "../..";
+import { Text, View } from "react-native";
 import { styles } from "./styles";
 import { useMemo } from "react";
 import { Feather } from "@expo/vector-icons";
+import { Task } from "../../../../@types/task";
 
 const STATUS_LABEL = {
   pending: "Pendente",
@@ -10,7 +10,7 @@ const STATUS_LABEL = {
   done: "Finalizada",
 };
 
-export default function TaskItemCard({ task }: PropsType) {
+export default function TaskListItem({ task }: PropsType) {
   const statusStyle = useMemo(() => {
     if (task.status === "pending") return styles.pending;
     if (task.status === "inProgress") return styles.inProgress;
@@ -41,8 +41,6 @@ export default function TaskItemCard({ task }: PropsType) {
     </View>
   );
 }
-
-export type TaskStatus = keyof typeof STATUS_LABEL;
 
 type PropsType = {
   task: Task;
