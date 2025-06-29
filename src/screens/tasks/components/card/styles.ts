@@ -26,9 +26,6 @@ export const styles = StyleSheet.create({
   pending: {
     borderLeftColor: "#264a97",
   },
-  inProgress: {
-    borderLeftColor: "#a79f28",
-  },
   done: {
     borderLeftColor: "#28a745",
   },

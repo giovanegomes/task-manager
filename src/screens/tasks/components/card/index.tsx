@@ -4,18 +4,9 @@ import { useMemo } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Task } from "../../../../@types/task";
 
-const STATUS_LABEL = {
-  pending: "Pendente",
-  inProgress: "Em andamento",
-  done: "Finalizada",
-};
-
 export default function TaskListItem({ task }: PropsType) {
-  const statusStyle = useMemo(() => {
-    if (task.status === "pending") return styles.pending;
-    if (task.status === "inProgress") return styles.inProgress;
-    return styles.done;
-  }, [task.status]);
+  const statusStyle = task.done ? styles.done : styles.pending;
+  const status = task.done ? "Finalizada" : "Pendente";
 
   const deleteTask = (id: string) => {
     console.log("excluir tarefa", id);
@@ -28,7 +19,7 @@ export default function TaskListItem({ task }: PropsType) {
         <View>
           <View style={styles.bottom}>
             <Text>{task.owner}</Text>
-            <Text>{STATUS_LABEL[task.status]}</Text>
+            <Text>{status}</Text>
           </View>
         </View>
       </View>
