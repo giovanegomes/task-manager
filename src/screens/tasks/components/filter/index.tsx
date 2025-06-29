@@ -1,60 +1,79 @@
-// import { Text, TextInput, View } from "react-native";
-// import { Chip } from "react-native-elements";
-// import { useCallback, useState } from "react";
+import {
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputChangeEventData,
+  View,
+} from "react-native";
+import { Chip } from "react-native-elements";
+import { useEffect, useState } from "react";
+import { debounce } from "lodash";
+import { styles } from "./styles";
 
-// // const StatusFilter = ({ onSelect }: StatusFilterProps) => {
-// //   const status = Object.keys(STATUS_LABEL) as TaskStatus[];
-// //   return (
-// //     <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-// //       {status.map((value) => {
-// //         return (
-// //           <Chip
-// //             key={value}
-// //             title={STATUS_LABEL[value]}
-// //             type="outline"
-// //             containerStyle={{ marginVertical: 15 }}
-// //             onPress={() => onSelect(value)}
-// //           />
-// //         );
-// //       })}
-// //     </View>
-// //   );
-// // };
+const StatusFilter = ({ onSelect }: StatusFilterProps) => {
+  return (
+    <View style={styles.statusContainer}>
+      <Chip
+        title="Pendente"
+        type="outline"
+        containerStyle={styles.chip}
+        onPress={() => onSelect(false)}
+      />
+      <Chip
+        title="Finalizado"
+        type="outline"
+        containerStyle={styles.chip}
+        onPress={() => onSelect(true)}
+      />
+    </View>
+  );
+};
 
-// export function Filter({ onFilter }: FilterProps) {
-//   const [responsavel, setResponsavel] = useState<TaskStatus>();
-//   const [selectedStatus, setSelectedStatus] = useState<TaskStatus>();
+export function Filter({ onFilter }: FilterProps) {
+  const [filterValues, setFilterValues] = useState<FilterValues>({
+    responsavel: undefined,
+    done: undefined,
+  });
 
-//   // const filter = useCallback(
-//   //   (newFilterValues: Partial<FilterValues>) => {
-//   //     onFilter({
-//   //       responsavel,
-//   //     });
-//   //   },
-//   //   [responsavel, selectedStatus]
-//   // );
+  const onChangeResponsavel = (
+    event: NativeSyntheticEvent<TextInputChangeEventData>
+  ) => {
+    const newValue = event.nativeEvent?.text ? event.nativeEvent.text : "";
+    setFilterValues((previous) => ({
+      ...previous,
+      responsavel: newValue,
+    }));
+  };
 
-//   return (
-//     <View>
-//       <Text>Responsável:</Text>
-//       <TextInput
-//         placeholder="Filtrar por responsável"
-//         style={{ borderColor: "black" }}
-//       />
-//       {/* <StatusFilter onSelect={(status) => filter({ status })} /> */}
-//     </View>
-//   );
-// }
+  const debouncedOnChangeResponsavel = debounce(onChangeResponsavel, 250);
 
-// type FilterValues = {
-//   responsavel: string;
-//   status: TaskStatus;
-// };
+  const onChangeStatus = (done: boolean) => {
+    setFilterValues((previous) => ({ ...previous, done }));
+  };
 
-// type FilterProps = {
-//   onFilter: ({ responsavel, status }: FilterValues) => void;
-// };
+  useEffect(() => {
+    onFilter(filterValues);
+  }, [filterValues]);
 
-// type StatusFilterProps = {
-//   onSelect: (status: TaskStatus) => void;
-// };
+  return (
+    <View>
+      <TextInput
+        placeholder="Filtrar por responsável"
+        onChange={debouncedOnChangeResponsavel}
+      />
+      <StatusFilter onSelect={onChangeStatus} />
+    </View>
+  );
+}
+
+type FilterValues = {
+  responsavel?: string;
+  done?: boolean;
+};
+
+type FilterProps = {
+  onFilter: ({ responsavel, done }: FilterValues) => void;
+};
+
+type StatusFilterProps = {
+  onSelect: (done: boolean) => void;
+};
