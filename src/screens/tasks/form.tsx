@@ -22,7 +22,7 @@ export function TaskForm() {
   const navigation = useAppNavigation();
   const route = useRoute<RouteProp<Routes, "taskForm">>();
   const { taskId } = route.params ?? {};
-  console.log(taskId);
+
   const {
     control,
     handleSubmit,
