@@ -4,10 +4,14 @@ import {
   TextInputChangeEventData,
   View,
 } from "react-native";
-import { Chip } from "react-native-elements";
-import { useEffect, useState } from "react";
+import { Button, Chip } from "react-native-elements";
 import { debounce } from "lodash";
 import { styles } from "./styles";
+import { useFilterStore } from "../../../../store/filterStore";
+
+type StatusFilterProps = {
+  onSelect: (done: boolean) => void;
+};
 
 const StatusFilter = ({ onSelect }: StatusFilterProps) => {
   return (
@@ -28,52 +32,22 @@ const StatusFilter = ({ onSelect }: StatusFilterProps) => {
   );
 };
 
-export function Filter({ onFilter }: FilterProps) {
-  const [filterValues, setFilterValues] = useState<FilterValues>({
-    responsavel: undefined,
-    done: undefined,
-  });
+export function Filter() {
+  const { setFilterValues, clearFilter } = useFilterStore();
 
-  const onChangeResponsavel = (
-    event: NativeSyntheticEvent<TextInputChangeEventData>
-  ) => {
-    const newValue = event.nativeEvent?.text ? event.nativeEvent.text : "";
-    setFilterValues((previous) => ({
-      ...previous,
-      responsavel: newValue,
-    }));
-  };
+  const handleChangeOwner = (newOwner: string) =>
+    setFilterValues({ owner: newOwner });
 
-  const debouncedOnChangeResponsavel = debounce(onChangeResponsavel, 250);
-
-  const onChangeStatus = (done: boolean) => {
-    setFilterValues((previous) => ({ ...previous, done }));
-  };
-
-  useEffect(() => {
-    onFilter(filterValues);
-  }, [filterValues]);
+  const debouncedHandleChangeOwner = debounce(handleChangeOwner, 250);
 
   return (
     <View>
       <TextInput
         placeholder="Filtrar por responsável"
-        onChange={debouncedOnChangeResponsavel}
+        onChangeText={debouncedHandleChangeOwner}
       />
-      <StatusFilter onSelect={onChangeStatus} />
+      <StatusFilter onSelect={(done) => setFilterValues({ done })} />
+      <Button title="Limpar filtros" onPress={clearFilter} />
     </View>
   );
 }
-
-type FilterValues = {
-  responsavel?: string;
-  done?: boolean;
-};
-
-type FilterProps = {
-  onFilter: ({ responsavel, done }: FilterValues) => void;
-};
-
-type StatusFilterProps = {
-  onSelect: (done: boolean) => void;
-};

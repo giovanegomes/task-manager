@@ -11,7 +11,7 @@ export function Tasks() {
 
   return (
     <View style={styles.container}>
-      <Filter onFilter={(f) => console.log("filter", f)} />
+      <Filter />
       <TaskList />
       <FAB
         icon={<Feather name="plus" color="white" />}

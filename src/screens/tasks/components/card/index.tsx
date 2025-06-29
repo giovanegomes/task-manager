@@ -1,6 +1,5 @@
 import { Text, View } from "react-native";
 import { styles } from "./styles";
-import { useMemo } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Task } from "../../../../@types/task";
 
