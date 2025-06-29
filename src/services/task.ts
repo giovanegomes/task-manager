@@ -5,28 +5,20 @@ class TaskService {
     "https://6861bc9796f0cc4e34b75830.mockapi.io/api/v1/tasks";
 
   async list() {
-    const response = await fetch(this.#BASE_URL);
+    const data = await this.#fetch(this.#BASE_URL);
 
-    if (!response.ok) throw new Error("Falha ao listar as tarefas.");
-
-    const tasks = (await response.json()) as Task[];
-    return tasks;
+    return data;
   }
 
-  async create(task: Omit<Task, "id">) {
+  async create(task: Omit<Task, "id" | "done">) {
     const params: RequestInit = {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(task),
     };
+    const data = await this.#fetch(this.#BASE_URL, params);
 
-    const response = await fetch(this.#BASE_URL, params);
-
-    if (!response.ok) throw new Error("Falha ao criar o registro");
-
-    const data = (await response.json()) as Task;
-
-    return data;
+    return data as Task;
   }
 
   async update(task: Task) {
@@ -37,25 +29,24 @@ class TaskService {
         "content-type": "application/json",
       },
     };
+    const data = await this.#fetch(`${this.#BASE_URL}/${task.id}`, params);
 
-    const response = await fetch(`${this.#BASE_URL}/${task.id}`, params);
-
-    if (!response.ok) throw new Error("Falha ao atualizar o registro.");
-
-    const data = (await response.json()) as Task;
-
-    return data;
+    return data as Task;
   }
 
   async delete(id: string) {
     const params = { method: "DELETE" };
-    const response = await fetch(`${this.#BASE_URL}/${id}`, params);
+    const data = await this.#fetch(`${this.#BASE_URL}/${id}`, params);
 
-    if (!response.ok) throw new Error("Falha na exclusão do registro.");
+    return data as Task;
+  }
 
-    const data = (await response.json()) as Task;
+  async #fetch(url: string, init?: RequestInit) {
+    const response = await fetch(url, init);
 
-    return data;
+    if (!response.ok) throw new Error("Falha na requisição.");
+
+    return response.json();
   }
 }
 
