@@ -2,19 +2,18 @@ import { Text, View } from "react-native";
 import { styles } from "./styles";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Routes } from "../../routes";
-import { useLayoutEffect } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { useAppNavigation } from "../../hooks/useAppNavigation";
 import { Feather } from "@expo/vector-icons";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "react-native-gesture-handler";
-import { Button } from "react-native-elements";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import TaskService from "../../services/task";
 
 const taskSchema = z.object({
   description: z.string().nonempty(),
   owner: z.string().nonempty(),
-  status: z.string().nonempty(),
 });
 
 type TaskFormInputs = z.infer<typeof taskSchema>;
@@ -23,21 +22,35 @@ export function TaskForm() {
   const navigation = useAppNavigation();
   const route = useRoute<RouteProp<Routes, "taskForm">>();
   const { taskId } = route.params ?? {};
-
+  console.log(taskId);
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       description: "",
       owner: "",
-      status: "",
     },
     resolver: zodResolver(taskSchema),
   });
 
-  const onSubmit = (data: TaskFormInputs) => console.log(data);
+  const onSubmit = useCallback(
+    async (task: TaskFormInputs) => {
+      try {
+        if (taskId) {
+          await TaskService.update(taskId, task);
+        } else {
+          await TaskService.create(task);
+        }
+        navigation.goBack();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [taskId]
+  );
 
   useLayoutEffect(() => {
     const title = taskId ? "Editando tarefa" : "Nova tarefa";
@@ -48,11 +61,27 @@ export function TaskForm() {
           name="check"
           size={30}
           style={{ marginRight: 10 }}
-          onPress={() => console.log("salvar")}
+          onPress={handleSubmit(onSubmit)}
         />
       ),
     });
   }, [navigation, taskId]);
+
+  useEffect(() => {
+    if (!taskId) return;
+
+    const fetchTask = async () => {
+      try {
+        const task = await TaskService.findById(taskId);
+        setValue("description", task.description);
+        setValue("owner", task.owner);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchTask();
+  }, [taskId]);
 
   return (
     <View style={styles.container}>
@@ -82,20 +111,6 @@ export function TaskForm() {
         )}
       />
       {errors.owner && <Text>This is required.</Text>}
-      <Controller
-        name="status"
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            placeholder="Status"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-          />
-        )}
-      />
-      {errors.status && <Text>This is required.</Text>}
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
     </View>
   );
 }

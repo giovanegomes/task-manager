@@ -16,17 +16,16 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  bottom: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  content: {
     marginTop: 10,
-    marginRight: 20,
   },
   pending: {
     borderLeftColor: "#264a97",
   },
   done: {
     borderLeftColor: "#28a745",
+  },
+  edit: {
+    marginLeft: 20,
   },
 });

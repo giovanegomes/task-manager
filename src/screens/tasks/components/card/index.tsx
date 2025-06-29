@@ -2,23 +2,33 @@ import { Text, View } from "react-native";
 import { styles } from "./styles";
 import { Feather } from "@expo/vector-icons";
 import { Task } from "../../../../@types/task";
+import TaskService from "../../../../services/task";
+import { useAppNavigation } from "../../../../hooks/useAppNavigation";
 
 export default function TaskListItem({ task }: PropsType) {
+  const navigation = useAppNavigation();
   const statusStyle = task.done ? styles.done : styles.pending;
   const status = task.done ? "Finalizada" : "Pendente";
 
-  const deleteTask = (id: string) => {
-    console.log("excluir tarefa", id);
+  const deleteTask = async (id: string) => {
+    try {
+      await TaskService.delete(id);
+    } catch (error) {
+      console.error("Falha ao excluir o registro", error);
+    }
   };
 
   return (
     <View style={[styles.container, statusStyle]}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{task.description}</Text>
+        <Text style={styles.title}>
+          {task.id} - {task.description}
+        </Text>
         <View>
-          <View style={styles.bottom}>
-            <Text>{task.owner}</Text>
-            <Text>{status}</Text>
+          <View style={styles.content}>
+            <Text>
+              {task.owner} - {status}
+            </Text>
           </View>
         </View>
       </View>
@@ -26,7 +36,15 @@ export default function TaskListItem({ task }: PropsType) {
         name="trash-2"
         size={30}
         color="red"
+        style={styles.edit}
         onPress={() => deleteTask(task.id)}
+      />
+      <Feather
+        name="edit"
+        size={30}
+        color="blue"
+        style={styles.edit}
+        onPress={() => navigation.navigate("taskForm", { taskId: task.id })}
       />
     </View>
   );

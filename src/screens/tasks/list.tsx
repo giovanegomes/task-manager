@@ -4,6 +4,7 @@ import { ListRenderItemInfo } from "react-native";
 import { Task } from "../../@types/task";
 import { useEffect, useState } from "react";
 import TaskService from "../../services/task";
+import { useFocusEffect } from "@react-navigation/native";
 
 const keyExtractor = ({ id }: Task) => id;
 
@@ -14,7 +15,7 @@ const renderItem = ({ item }: ListRenderItemInfo<Task>) => {
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  useEffect(() => {
+  useFocusEffect(() => {
     const fetchTasks = async () => {
       try {
         const data = await TaskService.list();
@@ -25,7 +26,8 @@ export function TaskList() {
     };
 
     fetchTasks();
-  }, []);
+  });
+
   return (
     <FlatList
       data={tasks}

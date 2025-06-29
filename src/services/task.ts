@@ -7,7 +7,13 @@ class TaskService {
   async list() {
     const data = await this.#fetch(this.#BASE_URL);
 
-    return data;
+    return data as Task[];
+  }
+
+  async findById(id: string) {
+    const data = await this.#fetch(`${this.#BASE_URL}/${id}`);
+
+    return data as Task;
   }
 
   async create(task: Omit<Task, "id" | "done">) {
@@ -21,7 +27,7 @@ class TaskService {
     return data as Task;
   }
 
-  async update(task: Task) {
+  async update(taskId: string, task: Partial<Task>) {
     const params: RequestInit = {
       method: "PUT",
       body: JSON.stringify(task),
@@ -29,7 +35,7 @@ class TaskService {
         "content-type": "application/json",
       },
     };
-    const data = await this.#fetch(`${this.#BASE_URL}/${task.id}`, params);
+    const data = await this.#fetch(`${this.#BASE_URL}/${taskId}`, params);
 
     return data as Task;
   }
