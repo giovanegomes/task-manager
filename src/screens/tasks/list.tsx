@@ -2,81 +2,7 @@ import { FlatList } from "react-native-gesture-handler";
 import TaskListItem from "./components/card";
 import { ListRenderItemInfo } from "react-native";
 import { Task } from "../../@types/task";
-
-const TASKS: Task[] = [
-  {
-    id: "1",
-    description: "Criar lista de tarefas",
-    owner: "Giovane",
-    done: false,
-  },
-  {
-    id: "2",
-    description: "Criar cadastro de tarefas",
-    owner: "João",
-    done: false,
-  },
-  {
-    id: "3",
-    description: "Criar exclusão de tarefas",
-    owner: "Lucas",
-    done: true,
-  },
-  {
-    id: "4",
-    description: "Criar lista de tarefas",
-    owner: "Giovane",
-    done: false,
-  },
-  {
-    id: "5",
-    description: "Criar cadastro de tarefas",
-    owner: "João",
-    done: false,
-  },
-  {
-    id: "6",
-    description: "Criar exclusão de tarefas",
-    owner: "Lucas",
-    done: true,
-  },
-  {
-    id: "7",
-    description: "Criar lista de tarefas",
-    owner: "Giovane",
-    done: false,
-  },
-  {
-    id: "8",
-    description: "Criar cadastro de tarefas",
-    owner: "João",
-    done: false,
-  },
-  {
-    id: "9",
-    description: "Criar exclusão de tarefas",
-    owner: "Lucas",
-    done: true,
-  },
-  {
-    id: "10",
-    description: "Criar lista de tarefas",
-    owner: "Giovane",
-    done: false,
-  },
-  {
-    id: "11",
-    description: "Criar cadastro de tarefas",
-    owner: "João",
-    done: false,
-  },
-  {
-    id: "12",
-    description: "Criar exclusão de tarefas",
-    owner: "Lucas",
-    done: true,
-  },
-];
+import { useEffect, useState } from "react";
 
 const keyExtractor = ({ id }: Task) => id;
 
@@ -85,9 +11,26 @@ const renderItem = ({ item }: ListRenderItemInfo<Task>) => {
 };
 
 export function TaskList() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(
+          "https://my-json-server.typicode.com/giovanegomes/task-manager-fake-api/tasks"
+        );
+        const data = await response.json();
+        setTasks(data);
+      } catch (error) {
+        console.error("Falha ao carregar tarefas:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
   return (
     <FlatList
-      data={TASKS}
+      data={tasks}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
     />
