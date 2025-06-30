@@ -1,19 +1,29 @@
-import { GestureResponderEvent, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { styles } from "./styles";
 import { Feather } from "@expo/vector-icons";
 import { Task } from "../../../../@types/task";
 import TaskService from "../../../../services/task";
 import { useAppNavigation } from "../../../../hooks/useAppNavigation";
-import { CheckBox } from "react-native-elements";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import Checkbox from "expo-checkbox";
 
 export default function TaskListItem({ task }: PropsType) {
   const [completed, setCompleted] = useState(task.done);
   const navigation = useAppNavigation();
-  const statusStyle = task.done ? styles.done : styles.pending;
-  const status = task.done ? "Finalizada" : "Pendente";
+  const statusStyle = completed ? styles.done : styles.pending;
+  const status = completed ? "Finalizada" : "Pendente";
 
-  const completeTask = () => setCompleted((previous) => !previous);
+  const completeTask = useCallback(
+    async (newStatus: boolean) => {
+      try {
+        setCompleted(newStatus);
+        await TaskService.update(task.id, { done: newStatus });
+      } catch (error) {
+        console.error("Falha ao atualizar o registro", error);
+      }
+    },
+    [task.id, completed]
+  );
 
   const deleteTask = async (id: string) => {
     try {
@@ -23,25 +33,13 @@ export default function TaskListItem({ task }: PropsType) {
     }
   };
 
-  useEffect(() => {
-    const updateTask = async () => {
-      try {
-        await TaskService.update(task.id, { done: completed });
-      } catch (error) {
-        console.error("Falha ao excluir o registro", error);
-      }
-    };
-    updateTask();
-  }, [task.id, completed]);
-
   return (
     <View style={[styles.container, statusStyle]}>
       <View>
-        <CheckBox
-          center
+        <Checkbox
           style={styles.checkbox}
-          checked={completed}
-          onPress={completeTask}
+          value={completed}
+          onValueChange={completeTask}
         />
       </View>
       <View style={styles.contentContainer}>

@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
     marginLeft: 20,
   },
   checkbox: {
-    margin: 0,
-    flex: 1,
+    marginRight: 20,
   },
 });

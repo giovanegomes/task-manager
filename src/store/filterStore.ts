@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 type FilterState = {
   owner?: string;
-  done: boolean;
+  done?: boolean;
 };
 
 type FilterActions = {
@@ -12,7 +12,7 @@ type FilterActions = {
 
 const initialState: FilterState = {
   owner: undefined,
-  done: false,
+  done: undefined,
 };
 
 export const useFilterStore = create<FilterState & FilterActions>((set) => ({
