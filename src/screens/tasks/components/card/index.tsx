@@ -1,14 +1,19 @@
-import { Text, View } from "react-native";
+import { GestureResponderEvent, Text, View } from "react-native";
 import { styles } from "./styles";
 import { Feather } from "@expo/vector-icons";
 import { Task } from "../../../../@types/task";
 import TaskService from "../../../../services/task";
 import { useAppNavigation } from "../../../../hooks/useAppNavigation";
+import { CheckBox } from "react-native-elements";
+import { useEffect, useState } from "react";
 
 export default function TaskListItem({ task }: PropsType) {
+  const [completed, setCompleted] = useState(task.done);
   const navigation = useAppNavigation();
   const statusStyle = task.done ? styles.done : styles.pending;
   const status = task.done ? "Finalizada" : "Pendente";
+
+  const completeTask = () => setCompleted((previous) => !previous);
 
   const deleteTask = async (id: string) => {
     try {
@@ -18,12 +23,29 @@ export default function TaskListItem({ task }: PropsType) {
     }
   };
 
+  useEffect(() => {
+    const updateTask = async () => {
+      try {
+        await TaskService.update(task.id, { done: completed });
+      } catch (error) {
+        console.error("Falha ao excluir o registro", error);
+      }
+    };
+    updateTask();
+  }, [task.id, completed]);
+
   return (
     <View style={[styles.container, statusStyle]}>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.title}>
-          {task.id} - {task.description}
-        </Text>
+      <View>
+        <CheckBox
+          center
+          style={styles.checkbox}
+          checked={completed}
+          onPress={completeTask}
+        />
+      </View>
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>{task.description}</Text>
         <View>
           <View style={styles.content}>
             <Text>

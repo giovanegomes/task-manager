@@ -60,7 +60,7 @@ export function TaskForm() {
         <Feather
           name="check"
           size={30}
-          style={{ marginRight: 10 }}
+          style={styles.submitButton}
           onPress={handleSubmit(onSubmit)}
         />
       ),

@@ -16,6 +16,9 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  contentContainer: {
+    flex: 1,
+  },
   content: {
     marginTop: 10,
   },
@@ -27,5 +30,9 @@ export const styles = StyleSheet.create({
   },
   edit: {
     marginLeft: 20,
+  },
+  checkbox: {
+    margin: 0,
+    flex: 1,
   },
 });

@@ -9,4 +9,7 @@ export const styles = StyleSheet.create({
   fab: {
     margin: 15,
   },
+  submitButton: {
+    marginRight: 10,
+  },
 });
